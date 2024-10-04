@@ -1,0 +1,123 @@
+.outer-block {
+    width: 350px;
+}
+
+section {
+    margin-top: 100px;
+}
+
+.quickTabOptions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 30px;
+}
+
+.quickTab {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    border-radius: 0;
+    background: none;
+    font-size: 1rem;
+    color: black;
+    opacity: 0.28;
+}
+
+.quickTab:hover {
+    border: 1px solid #ccd4df;
+    border-radius: 50px;
+}
+
+.quickTab.selected-tab {
+    border: 1px solid #0000001d;
+    border-radius: 50px;
+    color: #56AEFF;
+    opacity: 0.8;
+}
+
+
+form label {
+    text-wrap: nowrap;
+}
+
+.submitButtons {
+    padding: 10px 20px;
+    border: 1px solid rgb(208, 208, 208);
+    border-radius: 50px;
+    background-color: white;
+    font-size: 12px;
+}
+
+.submitButtons svg {
+    display: inline;
+    margin-left: 10px;
+    width: 1rem;
+}
+
+
+
+.radiusTabs {
+    border-radius: 25px;
+}
+
+
+
+
+/* --------------------Project.js-------------------- */
+
+
+td {
+    padding: 20px;
+}
+
+/* Add these styles to ensure the sticky header works */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Ensure the table container has a fixed height and scrolls */
+.table-container {
+    overflow: auto;
+    max-height: 550px;
+    position: relative;
+    /* border: 1px solid #dcdcdc; */
+    border-radius: 12px;
+    margin-top: 30px;
+}
+
+/* Ensure the table takes full width of its container */
+.table-container table {
+    width: 100%;
+}
+
+/* Style for the sticky header cells */
+.sticky-header th {
+    background-color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Add some padding to the header cells for better visibility */
+.sticky-header th {
+    padding: 20px;
+}
+
+/* Add a bottom border to the header for visual separation */
+.sticky-header:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background-color: #e5e7eb;
+}
+
+/* Add this new style */
+.table-wrapper {
+    position: relative;
+}

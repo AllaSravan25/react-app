@@ -1,0 +1,14 @@
+/* .revenue-chart-block {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+} */
+
+.revenue-chart-block svg {
+    background-color: white;
+}
+
+.css-uguv5e-MuiResponsiveChart-container {
+    width: 100%;
+}

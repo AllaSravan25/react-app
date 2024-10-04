@@ -1,0 +1,127 @@
+.attendance-calendar {
+    margin-top: 20px;
+    overflow-x: auto;
+    position: relative;
+  }
+  
+  .calendar-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 30px;
+  }
+  
+  .attendance-calendar table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  
+  .attendance-calendar th:first-child,
+  .attendance-calendar td:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #fff; /* Match this with your background color */
+    z-index: 1;
+    width: 100%;
+    font-weight: 500;
+    text-wrap: nowrap;
+    padding-right: 30px;
+  }
+  
+  .attendance-calendar th:first-child {
+    z-index: 2; /* Ensure the header stays on top */
+  }
+
+  .attendance-calendar th {
+    font-weight: 300;
+  }
+  
+  .attendance-calendar th,
+  .attendance-calendar td {
+    padding: 6px;
+    text-align: left;
+    min-width: 40px; /* Adjust as needed */
+  }
+  
+  /* Add a subtle shadow to create a separation effect */
+  .attendance-calendar th:first-child::after,
+  .attendance-calendar td:first-child::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 10px;
+    /* background: linear-gradient(to right, rgba(0,0,0,0.1), rgba(0,0,0,0)); */
+    pointer-events: none;
+  }
+  
+  /* Ensure circles don't get cut off */
+  .attendance-calendar td {
+    position: relative;
+  }
+  
+  /* Adjust the circle styling if needed */
+  .attendance-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer; /* Add this line to indicate the circle is interactive */
+  }
+  
+  .attendance-circle.Present {
+    background-color: #56aeff;
+  }
+  
+  .attendance-circle.Absent {
+    background-color: #57aeff5c;
+  }
+  
+  .attendance-circle.Leave {
+    background-color: #56aeffad;
+  }
+  
+  .attendance-circle.NotMarked {
+    background-color: #e5e7eb;
+  }
+  
+  /* Add these styles for the tooltip */
+  .attendance-circle:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+    z-index: 1000;
+  }
+  
+  .attendance-legend {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem;
+  }
+
+  .legend-item .attendance-circle {
+    margin-right: 0.5rem;
+  }
+
+  /* Ensure text is visible in the legend */
+  .legend-item span {
+    color: #333;
+    font-size: 0.9rem;
+  }
