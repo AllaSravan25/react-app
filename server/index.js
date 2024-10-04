@@ -17,14 +17,25 @@ const upload = multer({ storage: storage });
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
-
 app.use(express.json());
+
+
+
+const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://react-app-front-silk.vercel.app';
+
 app.use(cors({
-  origin: 'https://react-app-front-silk.vercel.app',
+  origin: allowedOrigin,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// app.use(cors({
+//   origin: 'https://react-app-front-silk.vercel.app',
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   credentials: true,
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+// }));
 
 // Make sure this line is near the top of your file, after other imports
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
