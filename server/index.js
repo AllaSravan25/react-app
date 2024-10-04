@@ -22,6 +22,7 @@ app.use(express.json());
 app.use(cors({
   origin: 'https://react-app-front-silk.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
