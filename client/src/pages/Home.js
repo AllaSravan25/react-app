@@ -6,7 +6,7 @@ import "../pages/styles/home.css";
 import AttendanceCalendar from "../components/attendanceMontly";
 import QuickSection from "../components/quickSection";
 import RevenueChart from "../components/RevenueChart";
-const API_BASE_URL = "http://localhost:5038";
+const API_BASE_URL = 'https://react-app-server-nu.vercel.app';
 
 export default function Home() {
   const [employeeCount, setEmployeeCount] = useState(0);

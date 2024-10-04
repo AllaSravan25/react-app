@@ -15,7 +15,7 @@ import { Label } from "../components/ui/label"
 import AddLead from '../components/AddLead'; // Import the AddLead component
 import { X } from 'lucide-react'; // Import the X icon
 
-const API_BASE_URL = 'http://localhost:5038';
+const API_BASE_URL = 'https://react-app-server-nu.vercel.app';
 
 // Custom Modal component
 const Modal = ({ isOpen, onClose, children }) => {
