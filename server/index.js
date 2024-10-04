@@ -21,26 +21,26 @@ app.use(express.json());
 
 
 
-const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://react-app-front-silk.vercel.app';
-
-app.use(cors({
-  origin: allowedOrigin,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+// const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://react-app-front-silk.vercel.app';
 
 // app.use(cors({
-//   origin: 'https://react-app-front-silk.vercel.app',
+//   origin: allowedOrigin,
 //   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 //   credentials: true,
 //   allowedHeaders: ['Content-Type', 'Authorization'],
 // }));
 
+app.use(cors({
+  origin: 'https://react-app-front-silk.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 // Make sure this line is near the top of your file, after other imports
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const mongoUri = process.env.MONGODB_URI;
+const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://siraaone:siraaone123@testcluster.8qjph.mongodb.net/?retryWrites=true&w=majority&tls=true&tlsAllowInvalidCertificates=true';
 
 console.log('MongoDB URI:', mongoUri);
 
