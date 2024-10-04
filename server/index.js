@@ -21,21 +21,21 @@ app.use(express.json());
 
 
 
-// const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://react-app-front-silk.vercel.app';
-
-// app.use(cors({
-//   origin: allowedOrigin,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   credentials: true,
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-// }));
+const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://react-app-front-silk.vercel.app'|| '*';
 
 app.use(cors({
-  origin: '*',
+  origin: allowedOrigin,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// app.use(cors({
+//   origin: '*',
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   credentials: true,
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+// }));
 
 // Make sure this line is near the top of your file, after other imports
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
