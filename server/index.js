@@ -1065,16 +1065,17 @@ app.post('/leads', async (req, res) => {
 });
 
 // Call this function after connecting to MongoDB
-async function startServer() {
+async function startServer() {  
+  app.listen(5038, () => {
+    console.log('Server is running on port 5038');
+  });
   await connectToMongo();
   await createEmployeesCollection();
   await createCollections();
   await addTestTransactions();
   await logTransactionsSchema();
   await updateTransactionsSchema();
-  app.listen(5038, () => {
-    console.log('Server is running on port 5038');
-  });
+
 }
 
 startServer().then(() => {
