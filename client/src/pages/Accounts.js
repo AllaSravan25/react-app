@@ -9,6 +9,8 @@ import RevenueChart from '../components/RevenueChart'
 import SpendChart from '../components/SpendChart'
 import ExpenseBreakdownChart from '../components/ExpenseBreakdownChart'
 
+BASE_URL = 'https://react-app-server-beta.vercel.app'
+
 const Accounts = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [transactions, setTransactions] = useState([]);
@@ -40,7 +42,7 @@ const Accounts = () => {
 
   const fetchTransactions = async () => {
     try {
-      const response = await fetch('http://localhost:5038/transactions');
+      const response = await fetch(`${BASE_URL}/transactions`);
       if (!response.ok) throw new Error('Failed to fetch transactions');
       const data = await response.json();
       setTransactions(data);
@@ -51,7 +53,7 @@ const Accounts = () => {
 
   const fetchMonthlyData = async () => {
     try {
-      const response = await fetch('http://localhost:5038/transactions/monthly');
+      const response = await fetch(`${BASE_URL}/transactions/monthly`);
       if (!response.ok) throw new Error('Failed to fetch monthly data');
       const data = await response.json();
       console.log('Monthly data received:', data);
@@ -63,7 +65,7 @@ const Accounts = () => {
 
   const fetchExpensesBreakdown = async () => {
     try {
-      const response = await fetch('http://localhost:5038/transactions/expenses');
+      const response = await fetch(`${BASE_URL}/transactions/expenses`);
       if (!response.ok) throw new Error('Failed to fetch expenses breakdown');
       const data = await response.json();
       setExpensesBreakdown(data);
