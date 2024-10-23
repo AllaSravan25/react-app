@@ -1294,6 +1294,7 @@ app.post('/employee/login', async (req, res) => {
 
     const employee = await employees.findOne({ userId: parseInt(userId) });
     console.log('Found employee:', employee ? 'Yes' : 'No');
+    console.log('Found employee:', employee ? JSON.stringify(employee, null, 2) : 'No');
 
     if (!employee) {
       console.log('Employee not found');
@@ -1306,6 +1307,8 @@ app.post('/employee/login', async (req, res) => {
     }
 
     console.log('Comparing passwords');
+    console.log('Stored hashed password:', employee.password);
+    console.log('Provided password:', password);
     const passwordMatch = await bcrypt.compare(password, employee.password);
     console.log('Password match:', passwordMatch);
 
