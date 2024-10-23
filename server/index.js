@@ -95,10 +95,101 @@ app.use(cors({
 //   allowedHeaders: ['Content-Type', 'Authorization'],
 // }));
 
+// ----------------------- Notifications -----------------------
+// ----------------------- Approvals -----------------------
+
+
+app.get('/approvals', async (req, res) => {
+  try {
+    const db = client.db("sample_mflix");
+    const approvals = db.collection("Approvals");
+    const projects = db.collection("projects");
+    const employees = db.collection("employees");
+
+    const approvalDocs = await approvals.find({}).toArray();
+
+    const result = await Promise.all(approvalDocs.map(async (approval) => {
+      const project = await projects.findOne({ ProjectId: approval.projectId });
+      const employee = await employees.findOne({ userId: approval.from });
+      console.log(`employee id was: ${approval.from}`);
+      console.log(project);
+      if(approval.status === "active"){
+      return {
+        ...approval,
+        projectName: project ? project.name : 'Unknown Project',
+        // clientName: project ? project.contact : 'Unknown Client',
+        employeeName: employee ? `${employee.firstName} ${employee.lastName}` : 'Unknown Employee',
+        projectId: project ? project.ProjectId : 'Unknown Project'
+      };
+    }
+    else {
+      return null;
+    }
+    }));
+
+    console.log(result);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error retrieving approvals:", error);
+    res.status(500).json({ message: "Error retrieving approvals" });
+  }
+});
+
+app.put('/approvals/addApproval/:projectId/:userId', async (req, res) => {
+  console.log(`req.params:`, req.params);
+  try {
+    const db = client.db("sample_mflix");
+    const approvals = db.collection("Approvals");
+    const { projectId, userId } = req.params;
+    console.log(`projectId: ${projectId}, userId: ${userId}`);
+
+    const result = await approvals.insertOne({
+      type: "Project",
+      projectId: parseInt(projectId, 10),
+      from: parseInt(userId, 10),
+      status: "active"
+    });
+
+    console.log(`result:`, result);
+
+    if (result.insertedId) {
+      res.status(200).json({ message: 'Approval added successfully' });
+    } else {
+      res.status(400).json({ message: 'Failed to add approval' });
+    }
+  } catch (error) {
+    console.error('Error adding approval:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+});
+
+app.put('/approvals/updateApproval/:projectId', async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const db = client.db("sample_mflix");
+    const approvals = db.collection("Approvals");
+    
+    const result = await approvals.updateOne(
+      { projectId: parseInt(projectId, 10) },
+      { $set: { status: "completed" } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Approval not found" });
+    }
+
+    res.status(200).json({ message: 'Approval updated successfully' });
+  } catch (error) {
+    console.error('Error updating approval:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+});
+
+
 // Make sure this line is near the top of your file, after other imports
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://siraaone:siraaone123@testcluster.8qjph.mongodb.net/?retryWrites=true&w=majority&tls=true&tlsAllowInvalidCertificates=true';
+const mongoUri = process.env.MONGODB_URI;
 
 console.log('MongoDB URI:', mongoUri);
 
@@ -372,29 +463,6 @@ app.get('/attendance/present', async (req, res) => {
     }
 });
 
-app.get('/attendance/records', async (req, res) => {
-    try {
-        const { date } = req.query;
-        // console.log('Received date for records:', date);
-        
-        // Ensure the date is treated as UTC
-        const startOfDay = new Date(date + 'T00:00:00Z');
-        const endOfDay = new Date(date + 'T23:59:59.999Z');
-        
-        // console.log('Query start date for records:', startOfDay.toISOString());
-        // console.log('Query end date for records:', endOfDay.toISOString());
-
-        const records = await client.db("sample_mflix").collection('attendance').find({
-            date: { $gte: startOfDay, $lt: endOfDay }  // Changed $lte to $lt
-        }).toArray();
-
-        // console.log('Number of records found:', records.length);
-        res.json({ records, queryDate: date, startOfDay: startOfDay.toISOString(), endOfDay: endOfDay.toISOString() });
-    } catch (error) {
-        console.error('Error fetching attendance records:', error);
-        res.status(500).json({ message: 'Internal server error', error: error.message });
-    }
-});
 
 app.get('/attendance/absent', async (req, res) => {
     try {
@@ -418,6 +486,31 @@ app.get('/attendance/absent', async (req, res) => {
     }
 });
 
+
+
+app.get('/attendance/records', async (req, res) => {
+    try {
+        const { date } = req.query;
+        // console.log('Received date for records:', date);
+        
+        // Ensure the date is treated as UTC
+        const startOfDay = new Date(date + 'T00:00:00Z');
+        const endOfDay = new Date(date + 'T23:59:59.999Z');
+        
+        // console.log('Query start date for records:', startOfDay.toISOString());
+        // console.log('Query end date for records:', endOfDay.toISOString());
+
+        const records = await client.db("sample_mflix").collection('attendance').find({
+            date: { $gte: startOfDay, $lt: endOfDay }  // Changed $lte to $lt
+        }).toArray();
+
+        // console.log('Number of records found:', records.length);
+        res.json({ records, queryDate: date, startOfDay: startOfDay.toISOString(), endOfDay: endOfDay.toISOString() });
+    } catch (error) {
+        console.error('Error fetching attendance records:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+});
 
 // Modify the bulk attendance route to use the same date format
 app.post('/attendance/bulk', async (req, res) => {
@@ -800,15 +893,15 @@ app.get('/projectslist', async (req, res) => {
   }
 });
 
-// Add route to mark a project as completed
-app.put('/projectslist/activeProjects/markAsCompleted', async (req, res) => {
+// Update the route to mark a project as completed
+app.put('/projectslist/activeProjects/markAsCompleted/:id', async (req, res) => {
   try {
+    const { id } = req.params;
     const db = client.db("sample_mflix");
     const projects = db.collection("projects");
-    const { id } = req.body;
-    
+
     const projectId = parseInt(id, 10);
-    
+
     if (isNaN(projectId)) {
       return res.status(400).json({ message: "Invalid project ID" });
     }
@@ -818,11 +911,11 @@ app.put('/projectslist/activeProjects/markAsCompleted', async (req, res) => {
       { $set: { status: 'completed' } }
     );
 
-    if (result.modifiedCount === 0) {
-      return res.status(404).json({ message: "Project not found or already completed" });
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Project not found" });
     }
 
-    res.json({ message: "Project marked as completed successfully" });
+    res.status(200).json({ message: "Project marked as completed" });
   } catch (error) {
     console.error("Error marking project as completed:", error);
     res.status(500).json({ message: "Error marking project as completed", error: error.message });
@@ -1082,6 +1175,8 @@ app.post('/projects', upload.array('documents'), async (req, res) => {
       projectValue: req.body.projectValue,
       assignTeam: req.body.assignTeam,
       sector: req.body.sector,
+      location: req.body.location,
+      contact: req.body.contact || 'no contact',
       date: new Date(req.body.date),
       status: req.body.status || 'active',
       documents: req.files ? req.files.map((file, index) => ({
@@ -1145,11 +1240,178 @@ app.post('/leads', async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+// --------------------------- NOTIFICATIONS ---------------------------//
+
+
+
+
+
+//--------------------------- LOGIN AND REGISTRATION ---------------------------//
+
+
+// Add these new routes before app.listen()
+
+// Route to check if an employee exists and validate credentials
+app.post('/employee/login', async (req, res) => {
+  console.log('Received login request:', req.body);
+  try {
+    const { userId, password } = req.body;
+    const db = client.db("sample_mflix");
+    const employees = db.collection("employees");
+
+    const employee = await employees.findOne({ userId: parseInt(userId) });
+    console.log('Found employee:', employee ? 'Yes' : 'No');
+
+    if (!employee) {
+      console.log('Employee not found');
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    if (!employee.password) {
+      console.log('Password not set');
+      return res.status(200).json({ message: "Password not set", requiresPasswordCreation: true });
+    }
+
+    console.log('Comparing passwords');
+    const passwordMatch = await bcrypt.compare(password, employee.password);
+    console.log('Password match:', passwordMatch);
+
+    if (passwordMatch) {
+      console.log('Login successful');
+      return res.status(200).json({ message: "Login successful", employee: { ...employee, password: undefined } });
+    } else {
+      console.log('Invalid credentials');
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+  } catch (error) {
+    console.error("Error during employee login:", error);
+    res.status(500).json({ message: "Error during login", error: error.message });
+  }
+});
+
+// Route to create a password for an employee
+app.post('/employee/create-password', async (req, res) => {
+  try {
+    const { userId, password } = req.body;
+    const db = client.db("sample_mflix");
+    const employees = db.collection("employees");
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const result = await employees.updateOne(
+      { userId: parseInt(userId) },
+      { $set: { password: hashedPassword } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: "Employee not found or password already set" });
+    }
+
+    res.status(200).json({ message: "Password created successfully" });
+  } catch (error) {
+    console.error("Error creating password:", error);
+    res.status(500).json({ message: "Error creating password", error: error.message });
+  }
+});
+
+app.post('/employee/update-password', async (req, res) => {
+  try {
+    const { userId, password } = req.body;
+    const db = client.db("sample_mflix");
+    const employees = db.collection("employees");
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const result = await employees.updateOne(
+      { userId: parseInt(userId) },
+      { $set: { password: hashedPassword } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error updating password:", error);
+    res.status(500).json({ message: "Error updating password", error: error.message });
+  }
+});
+
+// Add this new route before app.listen()
+app.get('/employee/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const db = client.db("sample_mflix");
+    const employees = db.collection("employees");
+
+    const employee = await employees.findOne({ userId: parseInt(userId) });
+
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    // Only send necessary information
+    const { firstName, lastName } = employee;
+    res.json({ firstName, lastName });
+  } catch (error) {
+    console.error("Error fetching employee details:", error);
+    res.status(500).json({ message: "Error fetching employee details", error: error.message });
+  }
+});
+
+// Update the existing route
+app.get('/employee/attendance/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { month, year } = req.query;
+    const db = client.db("sample_mflix");
+    const attendance = db.collection("attendance");
+
+    const startOfMonth = new Date(parseInt(year), parseInt(month) - 1, 1);
+    const endOfMonth = new Date(parseInt(year), parseInt(month), 0);
+
+    const attendanceData = await attendance.aggregate([
+      { 
+        $match: { 
+          userId: parseInt(userId), 
+          date: { $gte: startOfMonth, $lte: endOfMonth } 
+        } 
+      },
+      { 
+        $group: {
+          _id: null,
+          presentDays: { $sum: { $cond: [{ $eq: ["$status", "Present"] }, 1, 0] } },
+          absentDays: { $sum: { $cond: [{ $eq: ["$status", "Absent"] }, 1, 0] } },
+          leaveDays: { $sum: { $cond: [{ $eq: ["$status", "Leave"] }, 1, 0] } }
+        }
+      }
+    ]).toArray();
+
+    const result = attendanceData[0] || { presentDays: 0, absentDays: 0, leaveDays: 0 };
+    res.json(result);
+  } catch (error) {
+    console.error("Error fetching employee attendance:", error);
+    res.status(500).json({ message: "Error fetching employee attendance", error: error.message });
+  }
+});
+
+
+
+
+
+
+
 // Call this function after connecting to MongoDB
-async function startServer() {  
-  app.listen(5038, () => {
-    console.log('Server is running on port 5038');
-  });
+async function startServer() {
   await connectToMongo();
   await createEmployeesCollection();
   await createCollections();
@@ -1157,6 +1419,17 @@ async function startServer() {
   await logTransactionsSchema();
   await updateTransactionsSchema();
 
+  // Log all routes
+  console.log('Registered routes:');
+  app._router.stack.forEach(function(r){
+    if (r.route && r.route.path){
+      console.log(r.route.path)
+    }
+  })
+
+  app.listen(5038, () => {
+    console.log('Server is running on port 5038');
+  });
 }
 
 startServer().then(() => {
