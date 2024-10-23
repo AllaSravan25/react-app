@@ -20,13 +20,13 @@ const app = express();
 app.use(express.json());
 
 
-const allowedOrigin = [
-  'https://react-app-front-silk.vercel.app',
-  'https://erp-rsfire-b5y40ran7-allasravan25s-projects.vercel.app',
-  'https://react-app-server-beta.vercel.app',
-];
+// const allowedOrigin = [
+//   'https://react-app-front-silk.vercel.app',
+//   'https://erp-rsfire-b5y40ran7-allasravan25s-projects.vercel.app',
+//   'https://react-app-server-beta.vercel.app',
+// ];
 app.use(cors({
-  origin: allowedOrigin,
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
