@@ -34,7 +34,7 @@ app.use(express.json());
 
 
 
-const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://react-app-front-silk.vercel.app'|| 'https://erp-rsfire.vercel.app' || '*';
+const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://erp-rsfire.vercel.app' || 'https://react-app-front-silk.vercel.app'  || '*';
 
 app.use(cors({
   origin: allowedOrigin,
