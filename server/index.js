@@ -95,6 +95,33 @@ app.use(cors({
 //   allowedHeaders: ['Content-Type', 'Authorization'],
 // }));
 
+// check DB conection
+
+app.get('/check-db', async (req, res) => {
+  try {
+    const db = client.db("sample_mflix");
+    const collections = await db.listCollections().toArray();
+    const employeesCollection = collections.find(c => c.name === 'employees');
+
+    if (!employeesCollection) {
+      return res.status(404).json({ message: "Employees collection not found" });
+    }
+
+    const employeeCount = await db.collection("employees").countDocuments();
+
+    res.json({
+      message: "Database connection successful",
+      collections: collections.map(c => c.name),
+      employeeCount
+    });
+  } catch (error) {
+    console.error("Error checking database:", error);
+    res.status(500).json({ message: "Error checking database", error: error.message });
+  }
+});
+
+
+
 // ----------------------- Notifications -----------------------
 // ----------------------- Approvals -----------------------
 
