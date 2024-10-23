@@ -396,6 +396,29 @@ app.get('/attendance/records', async (req, res) => {
     }
 });
 
+app.get('/attendance/absent', async (req, res) => {
+    try {
+        const { date } = req.query;
+        // console.log('Received date for records:', date);
+        
+        // Ensure the date is treated as UTC
+        const startOfDay = new Date(date + 'T00:00:00Z');
+        const endOfDay = new Date(date + 'T23:59:59.999Z');
+
+        const count = await client.db("sample_mflix").collection('attendance').countDocuments({
+            status: "Absent",
+            date: { $gte: startOfDay, $lt: endOfDay }  // Changed $lte to $lt
+        });
+
+        // console.log('Count result:', count);
+        res.json({ count, queryDate: date, startOfDay: startOfDay.toISOString(), endOfDay: endOfDay.toISOString() });
+    } catch (error) {
+        console.error('Error fetching absent employees count:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+});
+
+
 // Modify the bulk attendance route to use the same date format
 app.post('/attendance/bulk', async (req, res) => {
     try {
