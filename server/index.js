@@ -26,7 +26,7 @@ app.use(express.json());
 //   'https://react-app-server-beta.vercel.app',
 // ];
 app.use(cors({
-  origin: '*',
+  origin: '',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
