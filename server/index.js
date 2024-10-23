@@ -20,28 +20,35 @@ const app = express();
 app.use(express.json());
 
 
-// const allowedOrigin = [
-//   'https://react-app-front-silk.vercel.app',
-//   'https://erp-rsfire-b5y40ran7-allasravan25s-projects.vercel.app',
-//   'https://react-app-server-beta.vercel.app',
-// ];
-// app.use(cors({
-//   origin: '',
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   credentials: true,
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-// }));
-
-
-
-const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://erp-rsfire.vercel.app' || 'https://react-app-front-silk.vercel.app'  || '*';
+const allowedOrigins = [
+  'https://erp-rsfire.vercel.app',
+  'https://react-app-front-silk.vercel.app',
+  'https://react-app-server-beta.vercel.app'
+];
 
 app.use(cors({
-  origin: allowedOrigin,
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+
+
+// const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://erp-rsfire.vercel.app' || 'https://react-app-front-silk.vercel.app'  || '*';
+
+// app.use(cors({
+//   origin: allowedOrigin,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   credentials: true,
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+// }));
 
 // app.use(cors({
 //   origin: '*',
