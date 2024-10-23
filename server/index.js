@@ -1376,6 +1376,34 @@ app.post('/employee/update-password', async (req, res) => {
   }
 });
 
+
+app.get('/check-employee/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const db = client.db("sample_mflix");
+    const employees = db.collection("employees");
+
+    const employee = await employees.findOne({ userId: parseInt(userId) });
+
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    // Remove sensitive information before sending
+    const { password, ...safeEmployee } = employee;
+
+    res.json({
+      message: "Employee found",
+      employee: safeEmployee
+    });
+  } catch (error) {
+    console.error("Error checking employee:", error);
+    res.status(500).json({ message: "Error checking employee", error: error.message });
+  }
+});
+
+
+
 // Add this new route before app.listen()
 app.get('/employee/:userId', async (req, res) => {
   try {
