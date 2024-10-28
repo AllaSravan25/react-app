@@ -352,6 +352,7 @@ async function createEmployeesCollection() {
 
 app.get('/', function(req, res){
     res.send('Hello World');
+    createEmployeesCollection();
 });
 
 app.post('/employees', upload.array('documents'), async (req, res) => {
