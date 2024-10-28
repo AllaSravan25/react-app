@@ -100,7 +100,7 @@ app.use(cors({
 
 app.get('/check-db', async (req, res) => {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const collections = await db.listCollections().toArray();
     const employeesCollection = collections.find(c => c.name === 'employees');
 
@@ -129,7 +129,7 @@ app.get('/check-db', async (req, res) => {
 
 app.get('/approvals', async (req, res) => {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const approvals = db.collection("Approvals");
     const projects = db.collection("projects");
     const employees = db.collection("employees");
@@ -166,7 +166,7 @@ app.get('/approvals', async (req, res) => {
 app.put('/approvals/addApproval/:projectId/:userId', async (req, res) => {
   console.log(`req.params:`, req.params);
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const approvals = db.collection("Approvals");
     const { projectId, userId } = req.params;
     console.log(`projectId: ${projectId}, userId: ${userId}`);
@@ -194,7 +194,7 @@ app.put('/approvals/addApproval/:projectId/:userId', async (req, res) => {
 app.put('/approvals/updateApproval/:projectId', async (req, res) => {
   try {
     const { projectId } = req.params;
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const approvals = db.collection("Approvals");
     
     const result = await approvals.updateOne(
@@ -241,7 +241,7 @@ async function connectToMongo() {
 
 async function createCollections() {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     
     const collections = [
         {
@@ -303,7 +303,7 @@ async function createCollections() {
 // Add this function near the top of your file, after your imports
 async function createEmployeesCollection() {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     
     const collections = await db.listCollections({ name: "employees" }).toArray();
     if (collections.length > 0) {
@@ -356,7 +356,7 @@ app.get('/', function(req, res){
 
 app.post('/employees', upload.array('documents'), async (req, res) => {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const employees = db.collection("employees");
     
     console.log('Received employee data:', req.body);
@@ -401,7 +401,7 @@ app.post('/employees', upload.array('documents'), async (req, res) => {
 app.get('/employees', async (req, res) => {
     console.log('Received request for employees');
     try {
-        const db = client.db("sample_mflix");
+        const db = client.db("rsfire_hyd");
         const employees = db.collection("employees");
         const result = await employees.find({}).toArray();
         // console.log('Employees found:', result.length);
@@ -414,7 +414,7 @@ app.get('/employees', async (req, res) => {
 
 app.get('/employees/count', async (req, res) => {
     try {
-        const db = client.db("sample_mflix");
+        const db = client.db("rsfire_hyd");
         const employees = db.collection("employees");
         const count = await employees.countDocuments();
         res.status(200).json({ count });
@@ -427,7 +427,7 @@ app.get('/employees/count', async (req, res) => {
 app.post('/attendance', async (req, res) => {
   // console.log('Received attendance data:', JSON.stringify(req.body, null, 2));
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const attendance = db.collection("attendance");
     
     if (!Array.isArray(req.body)) {
@@ -478,7 +478,7 @@ app.get('/attendance/present', async (req, res) => {
         // console.log('Query start date:', startOfDay.toISOString());
         // console.log('Query end date:', endOfDay.toISOString());
 
-        const count = await client.db("sample_mflix").collection('attendance').countDocuments({
+        const count = await client.db("rsfire_hyd").collection('attendance').countDocuments({
             status: "Present",
             date: { $gte: startOfDay, $lt: endOfDay }  // Changed $lte to $lt
         });
@@ -501,7 +501,7 @@ app.get('/attendance/absent', async (req, res) => {
         const startOfDay = new Date(date + 'T00:00:00Z');
         const endOfDay = new Date(date + 'T23:59:59.999Z');
 
-        const count = await client.db("sample_mflix").collection('attendance').countDocuments({
+        const count = await client.db("rsfire_hyd").collection('attendance').countDocuments({
             status: "Absent",
             date: { $gte: startOfDay, $lt: endOfDay }  // Changed $lte to $lt
         });
@@ -528,7 +528,7 @@ app.get('/attendance/records', async (req, res) => {
         // console.log('Query start date for records:', startOfDay.toISOString());
         // console.log('Query end date for records:', endOfDay.toISOString());
 
-        const records = await client.db("sample_mflix").collection('attendance').find({
+        const records = await client.db("rsfire_hyd").collection('attendance').find({
             date: { $gte: startOfDay, $lt: endOfDay }  // Changed $lte to $lt
         }).toArray();
 
@@ -550,7 +550,7 @@ app.post('/attendance/bulk', async (req, res) => {
             return res.status(400).json({ message: 'Invalid bulk attendance data' });
         }
 
-        const db = client.db("sample_mflix");
+        const db = client.db("rsfire_hyd");
         const employees = db.collection("employees");
         const attendance = db.collection("attendance");
 
@@ -596,7 +596,7 @@ app.get('/attendance/monthly', async (req, res) => {
         const startDate = new Date(year, month - 1, 1);
         const endDate = new Date(year, month, 0);
   
-        const db = client.db("sample_mflix");
+        const db = client.db("rsfire_hyd");
         const attendance = db.collection("attendance");
         const employees = db.collection("employees");
   
@@ -628,7 +628,7 @@ app.get('/transactions/summary', async (req, res) => {
   console.log('Received request for transaction summary');
   try {
     const { timeframe } = req.query;
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const transactions = db.collection("transactions");
     const monthlyBalances = db.collection("monthlyBalances");
 
@@ -688,7 +688,7 @@ app.post('/transactions', async (req, res) => {
   try {
     console.log('Received transaction data:', req.body);
     
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const transactions = db.collection("transactions");
 
     const transactionData = {
@@ -717,7 +717,7 @@ app.post('/transactions', async (req, res) => {
 app.get('/transactions/monthly', async (req, res) => {
   console.log('Received request for monthly transactions');
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const transactions = db.collection("transactions");
     
     const pipeline = [
@@ -778,7 +778,7 @@ app.get('/transactions/monthly', async (req, res) => {
 app.get('/transactions/expenses', async (req, res) => {
   console.log('Received request for expenses breakdown');
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const transactions = db.collection("transactions");
     
     const pipeline = [
@@ -801,7 +801,7 @@ app.get('/transactions/expenses', async (req, res) => {
 });
 
 async function logTransactionsSchema() {
-  const db = client.db("sample_mflix");
+  const db = client.db("rsfire_hyd");
   const collections = await db.listCollections({ name: "transactions" }).toArray();
   if (collections.length > 0) {
     console.log("Transactions collection schema:", JSON.stringify(collections[0].options.validator, null, 2));
@@ -811,7 +811,7 @@ async function logTransactionsSchema() {
 }
 
 async function updateTransactionsSchema() {
-  const db = client.db("sample_mflix");
+  const db = client.db("rsfire_hyd");
   await db.command({
     collMod: "transactions",
     validator: {
@@ -834,7 +834,7 @@ async function updateTransactionsSchema() {
 }
 
 async function addTestTransactions() {
-  const db = client.db("sample_mflix");
+  const db = client.db("rsfire_hyd");
   const transactions = db.collection("transactions");
   
   const testData = [
@@ -854,7 +854,7 @@ async function addTestTransactions() {
 
 // app.post('/monthly-balances/dummy', async (req, res) => {
 //   try {
-//     const db = client.db("sample_mflix");
+//     const db = client.db("rsfire_hyd");
 //     const monthlyBalances = db.collection("monthlyBalances");
 
 //     const currentDate = new Date();
@@ -891,7 +891,7 @@ async function addTestTransactions() {
 
 app.get('/projects', async (req, res) => {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const projects = db.collection("projects");
     const allProjects = await projects.find({}).toArray();
     res.json(allProjects);
@@ -905,7 +905,7 @@ app.get('/projects', async (req, res) => {
 app.get('/projectslist', async (req, res) => {
   console.log('Received request for projects list');
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const projects = db.collection("projects");
     
     const result = await projects.find({}).toArray();
@@ -925,7 +925,7 @@ app.get('/projectslist', async (req, res) => {
 app.put('/projectslist/activeProjects/markAsCompleted/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const projects = db.collection("projects");
 
     const projectId = parseInt(id, 10);
@@ -953,7 +953,7 @@ app.put('/projectslist/activeProjects/markAsCompleted/:id', async (req, res) => 
 // Modify the route to get project details
 app.get('/projectslist/ProjectDetails/:id', async (req, res) => {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const projects = db.collection("projects");
     const { id } = req.params;
     
@@ -985,7 +985,7 @@ app.get('/projectslist/ProjectDetails/:id', async (req, res) => {
 // Modify the route to update a project
 app.put('/projectslist/:id', upload.array('newDocuments'), async (req, res) => {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const projects = db.collection("projects");
     const { id } = req.params;
     
@@ -1056,7 +1056,7 @@ app.put('/projectslist/:id', upload.array('newDocuments'), async (req, res) => {
 // Add this new route to fetch all contacts
 app.get('/contacts', async (req, res) => {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const contacts = db.collection("leads");
     const result = await contacts.find({}).toArray();
     const groupedContacts = {
@@ -1074,7 +1074,7 @@ app.get('/contacts', async (req, res) => {
 // Add this new route to update contact status
 app.put('/contacts/:id/status', async (req, res) => {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const contacts = db.collection("leads");
     const { id } = req.params;
     const { to } = req.body;
@@ -1098,7 +1098,7 @@ app.put('/contacts/:id/status', async (req, res) => {
 // Add this new route to delete a contact
 app.delete('/contacts/:id', async (req, res) => {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const contacts = db.collection("leads");
     const { id } = req.params;
     
@@ -1119,7 +1119,7 @@ app.delete('/contacts/:id', async (req, res) => {
 app.get('/employees/latest-user-id', async (req, res) => {
   console.log('Received request for latest user ID');
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const employees = db.collection("employees");
     const latestEmployee = await employees.findOne({}, { sort: { userId: -1 } });
     console.log('Latest employee:', latestEmployee);
@@ -1137,7 +1137,7 @@ app.get('/employees/latest-user-id', async (req, res) => {
 app.get('/transactions', async (req, res) => {
   console.log('Received request for all transactions');
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const transactions = db.collection("transactions");
     
     const result = await transactions.find({}).toArray();
@@ -1151,7 +1151,7 @@ app.get('/transactions', async (req, res) => {
 
 app.get('/account-balance', async (req, res) => {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const transactions = db.collection("transactions");
     
     const pipeline = [
@@ -1191,7 +1191,7 @@ app.get('/account-balance', async (req, res) => {
 // Add this new route to handle project creation
 app.post('/projects', upload.array('documents'), async (req, res) => {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const projects = db.collection("projects");
     
     console.log('Received project data:', req.body);
@@ -1238,7 +1238,7 @@ app.post('/projects', upload.array('documents'), async (req, res) => {
 // Add this new route to handle lead creation
 app.post('/leads', async (req, res) => {
   try {
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const leads = db.collection("leads");
     
     console.log('Received lead data:', req.body);
@@ -1290,7 +1290,7 @@ app.post('/employee/login', async (req, res) => {
   console.log('Received login request:', req.body);
   try {
     const { userId, password } = req.body;
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const employees = db.collection("employees");
 
     const employee = await employees.findOne({ userId: parseInt(userId) });
@@ -1330,7 +1330,7 @@ app.post('/employee/login', async (req, res) => {
 app.post('/employee/create-password', async (req, res) => {
   try {
     const { userId, password } = req.body;
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const employees = db.collection("employees");
 
     const saltRounds = 10;
@@ -1355,7 +1355,7 @@ app.post('/employee/create-password', async (req, res) => {
 app.post('/employee/update-password', async (req, res) => {
   try {
     const { userId, password } = req.body;
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const employees = db.collection("employees");
 
     const saltRounds = 10;
@@ -1381,7 +1381,7 @@ app.post('/employee/update-password', async (req, res) => {
 app.get('/check-employee/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const employees = db.collection("employees");
 
     const employee = await employees.findOne({ userId: parseInt(userId) });
@@ -1409,7 +1409,7 @@ app.get('/check-employee/:userId', async (req, res) => {
 app.get('/employee/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const employees = db.collection("employees");
 
     const employee = await employees.findOne({ userId: parseInt(userId) });
@@ -1432,7 +1432,7 @@ app.get('/employee/attendance/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     const { month, year } = req.query;
-    const db = client.db("sample_mflix");
+    const db = client.db("rsfire_hyd");
     const attendance = db.collection("attendance");
 
     const startOfMonth = new Date(parseInt(year), parseInt(month) - 1, 1);
