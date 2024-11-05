@@ -1,42 +1,20 @@
-const bcrypt = require('bcrypt');
+const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
-const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
 const cors = require('cors');
 const multer = require('multer');
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname)
-  }
-});
-const upload = multer({ storage: storage });
+const bcrypt = require('bcrypt');
 
 dotenv.config({ path: path.join(__dirname, '.env') });
-
 const app = express();
 app.use(express.json());
 
-
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://erp-rsfire.vercel.app');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/'),
+  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
 });
-
-app.options('*', cors({
-  origin: [
-    'https://erp-rsfire.vercel.app',
-    'https://react-app-front-silk.vercel.app',
-    'https://react-app-server-beta.vercel.app'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+const upload = multer({ storage });
 
 const allowedOrigins = [
   'https://erp-rsfire.vercel.app',
@@ -52,13 +30,15 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-
-
+// Ensure OPTIONS requests are handled for preflight
+app.options('*', (req, res) => {
+  res.sendStatus(200);
+});
 // const allowedOrigins = [
 //   'https://erp-rsfire.vercel.app',
 //   'https://react-app-front-silk.vercel.app',
