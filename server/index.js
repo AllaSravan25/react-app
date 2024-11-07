@@ -384,12 +384,13 @@ app.post('/employees', upload.array('documents'), async (req, res) => {
       employee: employeeData
     });
   } catch (error) {
-    console.error("Error adding employee:", error);
-    if (error.code === 121) {
-      console.error('Validation error details:', JSON.stringify(error.errInfo.details, null, 2));
-    }
-    res.status(500).json({ message: "Error adding employee", error: error.message, details: error.errInfo?.details });
-  }
+  console.error("Error details:", error); // Log full error
+  res.status(500).json({ 
+    message: "Error adding employee", 
+    error: error.message || "Unknown error", 
+    details: error.errInfo?.details || "No additional details"
+  });
+}
 });
 
 app.get('/employees', async (req, res) => {
