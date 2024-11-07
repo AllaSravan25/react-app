@@ -78,6 +78,8 @@ app.options('*', (req, res) => {
 
 // check DB conection
 
+
+
 app.get('/check-db', async (req, res) => {
   try {
     const db = client.db("rsfire_hyd");
@@ -207,7 +209,7 @@ async function connectToMongo() {
     client = new MongoClient(mongoUri, {
         tls: true,
         tlsAllowInvalidCertificates: true,
-        serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds instead of 30 seconds
+        serverSelectionTimeoutMS: 35000, // Timeout after 5 seconds instead of 30 seconds
     });
 
     try {
@@ -218,6 +220,17 @@ async function connectToMongo() {
         process.exit(1);
     }
 }
+
+// let client;
+
+// async function connectToDB() {
+//   if (!client) {
+//     client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+//     await client.connect();
+//   }
+//   return client;
+// }
+
 
 async function createCollections() {
   try {
