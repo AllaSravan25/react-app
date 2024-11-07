@@ -352,7 +352,8 @@ app.post('/employees', upload.array('documents'), async (req, res) => {
   try {
     const db = client.db("rsfire_hyd");
     const employees = db.collection("employees");
-    
+
+    // Log the incoming data for debugging
     console.log('Received employee data:', req.body);
     console.log('Received files:', req.files);
 
@@ -374,24 +375,28 @@ app.post('/employees', upload.array('documents'), async (req, res) => {
         path: `${req.protocol}://${req.get('host')}/uploads/${file.filename}`
       })) : []
     };
-    
+
     console.log('Processed employee data:', JSON.stringify(employeeData, null, 2));
+
     const result = await employees.insertOne(employeeData);
     console.log('Inserted employee with ID:', result.insertedId);
+
     res.status(201).json({
       message: "Employee added successfully",
       employeeId: result.insertedId,
       employee: employeeData
     });
   } catch (error) {
-  console.error("Error details:", error); // Log full error
-  res.status(500).json({ 
-    message: "Error adding employee", 
-    error: error.message || "Unknown error", 
-    details: error.errInfo?.details || "No additional details"
-  });
-}
+    console.error("Error adding employee:", error);
+    console.error("Error stack:", error.stack);  // Log the stack trace for more details
+    res.status(500).json({
+      message: "Error adding employee",
+      error: error.message,
+      stack: error.stack,  // Send stack trace in the response for better debugging
+    });
+  }
 });
+
 
 app.get('/employees', async (req, res) => {
     console.log('Received request for employees');
